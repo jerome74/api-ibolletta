@@ -1,0 +1,7 @@
+spring:
+    cloud:
+        config:
+            server:
+                git:
+                    uri: https://github.com/jerome74/ibolletta-prop.git
+                    skip-ssl-validation: true
