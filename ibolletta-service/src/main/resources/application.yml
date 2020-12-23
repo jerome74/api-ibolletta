@@ -24,12 +24,6 @@ spring:
       jpa:
         repositories:
           bootstrap-mode: default
-  zipkin:
-    base-url: http://zipkin:9411/
-  sleuth:
-    enabled: true
-  rabbitmq:
-    addresses: amqp://rabbitmq:5672/
 eureka:
   client:
     serviceUrl:
@@ -38,3 +32,12 @@ eureka:
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
     hostname: ${spring.cloud.client.ip-address}
+
+ibolletta:
+  message:
+    save:
+      ok: bolletta inserita correttamente
+    delete:
+      ok: bolletta cancellata correttamente
+    update:
+      ok: bolletta aggiornata correttamente

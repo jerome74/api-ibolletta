@@ -7,12 +7,6 @@ spring:
     loadbalancer:
       ribbon:
         enabled: false
-  zipkin:
-    base-url: http://zipkin:9411/
-  sleuth:
-    enabled: true
-  rabbitmq:
-    addresses: amqp://rabbitmq:5672/
 eureka:
   client:
     serviceUrl:

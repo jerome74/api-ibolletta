@@ -1,5 +1,6 @@
 package it.wlp.api.ibolletta.controllers
 
+import it.wlp.api.ibolletta.configs.ConfigProperties
 import it.wlp.api.ibolletta.entities.Bolletta
 import it.wlp.api.ibolletta.dtos.*
 import it.wlp.api.ibolletta.repositories.BollettaRepository
@@ -19,23 +20,36 @@ class IBollettaController {
     @Autowired
     lateinit var bollettaRepository: BollettaRepository
 
+    @Autowired
+    lateinit var configProperties: ConfigProperties
+
+
+
     @PostMapping(path = ["/save"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun saveBolletta(@RequestBody bolletta: BollettaDTO): ResponseEntity<HttpStatus> {
-        if (ObjectUtils.equals(bollettaRepository.save(Bolletta(bolletta.id,
+    fun saveBolletta(@RequestBody bolletta: BollettaDTO): ResponseEntity<String> {
+        bollettaRepository.save(Bolletta(bolletta.id,
                         bolletta.email
                         ,bolletta.cc
                         ,bolletta.importo
                         ,bolletta.scadenza
                         ,bolletta.numero
                         ,bolletta.owner
-                        ,bolletta.td)), null))
-            return ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
-        else
-            return ResponseEntity(HttpStatus.OK)
+                        ,bolletta.td))
+
+
+
+        return ResponseEntity.ok()
+                .contentLength(configProperties.getPropertes("ibolletta.message.save.ok")!!.length.toLong())
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(configProperties.getPropertes("ibolletta.message.save.ok"))
+
+
     }
 
     @GetMapping(path = ["/findall/{email}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun findAllBollettas(@PathVariable email: String): List<BollettaDTO> {
+
+
         return bollettaRepository.findAll().stream().filter { it.email.equals(email) }.map { BollettaDTO(
                 it.id,
                 it.email
@@ -49,17 +63,20 @@ class IBollettaController {
     }
 
     @GetMapping(path = ["/delete/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun deleteBolletta(@PathVariable id: Int): ResponseEntity<HttpStatus> {
+    fun deleteBolletta(@PathVariable id: Int): ResponseEntity<String> {
         try {
             bollettaRepository.deleteById(id)
-            return ResponseEntity(HttpStatus.OK)
+            return ResponseEntity.ok()
+                    .contentLength(configProperties.getPropertes("ibolletta.message.save.ok")!!.length.toLong())
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(configProperties.getPropertes("ibolletta.message.delete.ok"))
         } catch (e: Exception) {
             return ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 
     @PutMapping(path = ["/update/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun deleteBolletta(@PathVariable id: Int, @RequestBody inbolletta: BollettaDTO): ResponseEntity<HttpStatus> {
+    fun deleteBolletta(@PathVariable id: Int, @RequestBody inbolletta: BollettaDTO): ResponseEntity<String> {
         try {
 
             val bolletta = bollettaRepository.findById(id)
@@ -67,17 +84,19 @@ class IBollettaController {
             if (ObjectUtils.equals(bolletta, null))
                     return ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
 
-            if (ObjectUtils.equals(bollettaRepository.save(bolletta.map { Bolletta(it.id,
+            bollettaRepository.save(bolletta.map { Bolletta(it.id,
                              inbolletta.email
                             ,inbolletta.cc
                             ,inbolletta.importo
                             ,inbolletta.scadenza
                             ,inbolletta.numero
                             ,inbolletta.owner
-                            ,inbolletta.td)}.get()), null))
-                return ResponseEntity(HttpStatus.BAD_REQUEST)
+                            ,inbolletta.td)}.get())
 
-            return ResponseEntity(HttpStatus.OK)
+            return ResponseEntity.ok()
+                    .contentLength(configProperties.getPropertes("ibolletta.message.update.ok")!!.length.toLong())
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(configProperties.getPropertes("ibolletta.message.update.ok"))
 
         } catch (e: Exception) {
             return ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)

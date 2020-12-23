@@ -44,7 +44,7 @@ class ApiController {
     }
 
     @PostMapping(path = ["/save"]  )
-    fun save(@RequestBody bolletta: BollettaDTO) : ResponseEntity<HttpStatus>{
+    fun save(@RequestBody bolletta: BollettaDTO) : ResponseEntity<String>{
         return iBollettaProxy.saveBolletta(bolletta)
     }
 
@@ -54,12 +54,12 @@ class ApiController {
     }
 
     @GetMapping(path = ["/delete/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun deleteBolletta(@PathVariable id: Int): ResponseEntity<HttpStatus>{
+    fun deleteBolletta(@PathVariable id: Int): ResponseEntity<String>{
         return iBollettaProxy.deleteBolletta(id)
     }
 
     @PutMapping(path = ["/update/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateBolletta(@PathVariable id: Int, @RequestBody inbolletta: BollettaDTO): ResponseEntity<HttpStatus>{
+    fun updateBolletta(@PathVariable id: Int, @RequestBody inbolletta: BollettaDTO): ResponseEntity<String>{
         return iBollettaProxy.updateBolletta(id, inbolletta)
     }
 
