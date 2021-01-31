@@ -18,6 +18,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.web.server.SecurityWebFilterChain
 import org.xmlpull.v1.XmlPullParserException
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
@@ -55,12 +57,15 @@ class WebConfig : WebSecurityConfigurerAdapter() {
                 .addFilterAfter(jwtTokenVerifier, JwtUserAndPasswordAuthenticationFilter::class.java)
                 .authorizeRequests()
                 .antMatchers("/api-rest/**").permitAll()
+                .antMatchers("/actuator/**").permitAll()
                 .antMatchers("/api-rest/**").hasRole(configPermissions.access)
                 .anyRequest()
                 .authenticated()
 
         AuthObj.configSecret = configSecret
     }
+
+
 
     override fun configure(auth: AuthenticationManagerBuilder?) {
         auth!!.userDetailsService(service).passwordEncoder(UtilCrypt.crypto)
