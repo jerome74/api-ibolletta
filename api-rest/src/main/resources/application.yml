@@ -1,4 +1,12 @@
 spring:
   profiles:
     active: prod
-
+  cloud:
+    config:
+      enabled: true
+      name: ibolletta-prop
+      profile: dev
+      label: master
+    loadbalancer:
+      ribbon:
+        enabled: false

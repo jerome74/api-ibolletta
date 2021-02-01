@@ -32,12 +32,3 @@ eureka:
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
     hostname: ${spring.cloud.client.ip-address}
-
-ibolletta:
-  message:
-    save:
-      ok: bolletta inserita correttamente
-    delete:
-      ok: bolletta cancellata correttamente
-    update:
-      ok: bolletta aggiornata correttamente

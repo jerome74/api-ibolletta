@@ -16,16 +16,6 @@ spring:
         bootstrap-mode: default
   application:
     name: api-rest
-  cloud:
-    config:
-      enabled: true
-      uri: http://cloud-config-server:8888
-      name: ibolletta-prop
-      profile: dev
-      label: master
-    loadbalancer:
-      ribbon:
-        enabled: false
   health:
     config:
       enabled: false

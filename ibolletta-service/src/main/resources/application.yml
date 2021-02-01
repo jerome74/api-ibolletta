@@ -1,4 +1,12 @@
 spring:
   profiles:
     active: prod
+ibolletta:
+  message:
+    save:
+      ok: bolletta inserita correttamente
+    delete:
+      ok: bolletta cancellata correttamente
+    update:
+      ok: bolletta aggiornata correttamente
 
