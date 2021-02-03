@@ -3,12 +3,12 @@ package it.wlp.api.ibolletta
 import com.netflix.zuul.ZuulFilter
 import com.netflix.zuul.context.RequestContext
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 
-@RestController
-@RequestMapping("/api/api-rest")
+@Component
 class ZuulLoggingFilter : ZuulFilter() {
 
     companion object {

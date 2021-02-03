@@ -5,7 +5,7 @@ spring:
     config:
       enabled: true
       name: ibolletta-prop
-      profile: dev
+      profile: prod
       label: master
     loadbalancer:
       ribbon:

@@ -63,12 +63,12 @@ services:
             - cloud-native-network
         depends_on:
             - elasticsearch
-    config-server:
+    cloud-config-server:
         build: ../cloud-config-server
         container_name: cloud-config-server
         working_dir: /cloud-config-server
         volumes:
-            - ../cloud-config-server:/config-scraper
+            - ../cloud-config-server:/cloud-config-server
             - ~/.m2:/root/.m2
         networks:
             - cloud-native-network
@@ -79,7 +79,7 @@ services:
         ports:
             - "8888:8888/tcp"
             - "8888:8888/udp"
-        command: mvn clean spring-boot:run -Dspring-boot.run.arguments=--spring.cloud.config.uri=http://config-server:8888
+        command: mvn clean spring-boot:run
         restart: always
     cloud-eureka-server:
         build: ../cloud-eureka-server
@@ -96,7 +96,7 @@ services:
         command: mvn clean spring-boot:run
         restart: always
         depends_on:
-            - config-server
+            - cloud-config-server
     zuul-api-gateway:
         build: ../zuul-api-gateway
         working_dir: /zuul-api-gateway
@@ -125,7 +125,7 @@ services:
             - 8081
         ports:
             - 8081:8081
-        command: mvn clean spring-boot:run
+        command: mvn clean spring-boot:run -Dspring-boot.run.arguments=--spring.cloud.config.uri=http://cloud-config-server:8888
         restart: always
         depends_on:
             - zuul-api-gateway
