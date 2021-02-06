@@ -64,85 +64,72 @@ services:
         depends_on:
             - elasticsearch
     cloud-config-server:
-        build: ../cloud-config-server
+        image: wlp/config-server
         container_name: cloud-config-server
-        working_dir: /cloud-config-server
-        volumes:
-            - ../cloud-config-server:/cloud-config-server
-            - ~/.m2:/root/.m2
+        build:
+            context: ../cloud-config-server
+            dockerfile: Dockerfile
         networks:
             - cloud-native-network
-        depends_on:
-            - kibana
         expose:
-            - 8888
+            - "8888"
         ports:
             - "8888:8888/tcp"
             - "8888:8888/udp"
-        command: mvn clean spring-boot:run
-        restart: always
     cloud-eureka-server:
-        build: ../cloud-eureka-server
-        working_dir: /cloud-eureka-server
-        volumes:
-            - ../cloud-eureka-server:/cloud-eureka-server
-            - ~/.m2:/root/.m2
+        image: wlp/eureka-server
+        container_name: cloud-eureka-server
+        build:
+            context: ../cloud-eureka-server
+            dockerfile: Dockerfile
         networks:
             - cloud-native-network
         expose:
             - "8761"
         ports:
             - "8761:8761"
-        command: mvn clean spring-boot:run
-        restart: always
         depends_on:
             - cloud-config-server
     zuul-api-gateway:
-        build: ../zuul-api-gateway
-        working_dir: /zuul-api-gateway
-        volumes:
-            - ../zuul-api-gateway:/zuul-api-gateway
-            - ~/.m2:/root/.m2
+        image: wlp/zuul-service
+        container_name: zuul-api-gateway
+        build:
+            context: ../zuul-api-gateway
+            dockerfile: Dockerfile
         networks:
             - cloud-native-network
         expose:
-            - 8755
+            - "8755"
         ports:
-            - 8755:8755
-        command: mvn clean spring-boot:run
-        restart: always
+            - "8755:8755"
         depends_on:
             - cloud-eureka-server
     api-rest:
-        build: ../api-rest
-        working_dir: /api-rest
-        volumes:
-            - ../api-rest:/api-rest
-            - ~/.m2:/root/.m2
+        image:  wlp/api-service
+        container_name: api-rest
+        build:
+            context: ../api-rest
+            dockerfile: Dockerfile
         networks:
             - cloud-native-network
         expose:
-            - 8081
+            - "8081"
         ports:
-            - 8081:8081
-        command: mvn clean spring-boot:run -Dspring-boot.run.arguments=--spring.cloud.config.uri=http://cloud-config-server:8888
-        restart: always
+            - "8081:8081"
         depends_on:
             - zuul-api-gateway
     ibolletta-service:
-        build: ../ibolletta-service
-        working_dir: /ibolletta-service
-        volumes:
-            - ../ibolletta-service:/ibolletta-service
-            - ~/.m2:/root/.m2
+        image: wlp/business-service
+        container_name: ibolletta-service
+        build:
+            context: ../ibolletta-service
+            dockerfile: Dockerfile
         networks:
             - cloud-native-network
         expose:
-            - 8082
+            - "8082"
         ports:
-            - 8082:8082
-        command: mvn clean spring-boot:run
-        restart: always
+            - "8082:8082"
         depends_on:
             - zuul-api-gateway
 volumes:

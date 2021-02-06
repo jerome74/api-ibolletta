@@ -1,0 +1,17 @@
+version: '3.2'
+services:
+    cloud-config-server:
+        image: wlp/cs-config
+        container_name: cloud-config-server
+        build:
+            context: ../cloud-config-server
+            dockerfile: Dockerfile
+        networks:
+            - cloud-native-network
+        expose:
+            - 8888
+        ports:
+            - "8888:8888/tcp"
+            - "8888:8888/udp"
+networks:
+    cloud-native-network:
