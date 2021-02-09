@@ -12,7 +12,7 @@ import java.security.MessageDigest
 
 
 @Component
-@PropertySource("classpath:application.yml")
+@PropertySource("classpath:bootstrap.yml")
 class ConfigProperties
 {
     @Autowired

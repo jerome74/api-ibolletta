@@ -4,6 +4,7 @@ spring:
   cloud:
     config:
       enabled: true
+      uri: http://config-server:8888
       name: ibolletta-prop
       profile: prod
       label: master

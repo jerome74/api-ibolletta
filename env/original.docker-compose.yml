@@ -1,0 +1,145 @@
+version: '3.2'
+services:
+    elasticsearch:
+        build:
+            context: elasticsearch/
+            args:
+                ELK_VERSION: $ELK_VERSION
+        volumes:
+            -   type: bind
+                source: ./elasticsearch/config/elasticsearch.yml
+                target: /usr/share/elasticsearch/config/elasticsearch.yml
+                read_only: true
+            -   type: volume
+                source: elasticsearch
+                target: /usr/share/elasticsearch/data
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+        environment:
+            ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+            ELASTIC_PASSWORD: changeme
+            discovery.type: single-node
+        networks:
+            - cloud-native-network
+
+    logstash:
+        build:
+            context: logstash/
+            args:
+                ELK_VERSION: $ELK_VERSION
+        volumes:
+            -   type: bind
+                source: ./logstash/config/logstash.yml
+                target: /usr/share/logstash/config/logstash.yml
+                read_only: true
+            -   type: bind
+                source: ./logstash/pipeline
+                target: /usr/share/logstash/pipeline
+                read_only: true
+        ports:
+            - "5000:5000/tcp"
+            - "5000:5000/udp"
+            - "9600:9600"
+        environment:
+            LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+        networks:
+            - cloud-native-network
+        depends_on:
+            - elasticsearch
+    kibana:
+        build:
+            context: kibana/
+            args:
+                ELK_VERSION: $ELK_VERSION
+        volumes:
+            - type: bind
+              source: ./kibana/config/kibana.yml
+              target: /usr/share/kibana/config/kibana.yml
+              read_only: true
+        ports:
+            - "5601:5601"
+        networks:
+            - cloud-native-network
+        depends_on:
+            - elasticsearch
+    cloud-config-server:
+        container_name: cloud-config-server
+        build:
+            context: ../cloud-config-server
+            dockerfile: Dockerfile
+        networks:
+            - cloud-native-network
+        volumes:
+            - cloud-native-volume:/tmp
+        expose:
+            - 8888
+        ports:
+            - "8888:8888/tcp"
+            - "8888:8888/udp"
+    cloud-eureka-server:
+        container_name: cloud-eureka-server
+        build:
+            context: ../cloud-eureka-server
+            dockerfile: Dockerfile
+        networks:
+            - cloud-native-network
+        volumes:
+            - cloud-native-volume:/tmp
+        expose:
+            - 8761
+        ports:
+            - "8761:8761/tcp"
+            - "8761:8761/udp"
+        depends_on:
+            - cloud-config-server
+    zuul-api-gateway:
+        container_name: zuul-api-gateway
+        build:
+            context: ../zuul-api-gateway
+            dockerfile: Dockerfile
+        networks:
+            - cloud-native-network
+        volumes:
+            - cloud-native-volume:/tmp
+        expose:
+            - 8755
+        ports:
+            - 8755:8755
+        depends_on:
+            - cloud-eureka-server
+    api-rest:
+        container_name: api-rest
+        build:
+            context: ../api-rest
+            dockerfile: Dockerfile
+        networks:
+            - cloud-native-network
+        volumes:
+            - cloud-native-volume:/tmp
+        expose:
+            - 8081
+        ports:
+            - 8081:8081
+        depends_on:
+            - cloud-eureka-server
+    ibolletta-service:
+        container_name: ibolletta-service
+        build:
+            context: ../ibolletta-service
+            dockerfile: Dockerfile
+        networks:
+            - cloud-native-network
+        volumes:
+            - cloud-native-volume:/tmp
+        expose:
+            - 8082
+        ports:
+            - 8082:8082
+        depends_on:
+            - cloud-eureka-server
+volumes:
+    elasticsearch:
+    cloud-native-volume:
+networks:
+    cloud-native-network:
